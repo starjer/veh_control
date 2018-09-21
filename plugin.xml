@@ -1,0 +1,21 @@
+ <library path="src">
+   <class name="VehicleControl" type="rqt_mypkg.vehicle_control.VehicleControl" base_class_type="rqt_gui_py::Plugin">
+     <description>
+       An example Python GUI plugin to create a great user interface.
+     </description>
+     <qtgui>
+       <!-- optional grouping...
+       <group>
+         <label>Group</label>
+       </group>
+       <group>
+         <label>Subgroup</label>
+       </group>
+       -->
+       <label>Formation Control</label>
+       <icon type="theme">applications-accessories</icon>
+       <statustip>Great user interface to provide real value.</statustip>
+     </qtgui>
+   </class>
+ </library>
+
