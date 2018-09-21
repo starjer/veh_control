@@ -76,10 +76,10 @@ class VehicleControl(Plugin):
         self.textList = []
         self.vehicles = []
         self.vehCounter = 0
-        self.x_corr = [None]*5
-        self.y_corr = [None]*5
-        self.x_shape = [0]*25
-        self.y_shape = [0]*25
+        self.x_corr = [None]*len(self.vehNames)
+        self.y_corr = [None]*len(self.vehNames)
+        self.x_shape = [0]*len(self.vehNames)**2
+        self.y_shape = [0]*len(self.vehNames)**2
         self.vehCounter = 0
         self.vehLenght = 0.8
         self.offset = self.vehLenght/2
@@ -387,55 +387,58 @@ class VehicleControl(Plugin):
 
     def pub_FormChange(self):
 
-        try:
-            float(self._widget.angleEdit.text())
-        except ValueError:
-            self.change_plain_text('Wrong input! (expected int or float)')
-        else:
 
-            if self._widget.shapeCheckBox.isChecked() and self._widget.rotationCheckBox.isChecked() == False:
-                self.change_plain_text('Shape selected (shape enable set: True), rotation angle not selected (rootation enable set: False)')
-                print('Shape set: True')
+        if self._widget.shapeCheckBox.isChecked() and self._widget.rotationCheckBox.isChecked() == False:
+            self.change_plain_text('Shape selected (shape enable set: True), rotation angle not selected (rootation enable set: False)')
+            print('Shape set: True')
+            tmp = formation_control.msg.Formation()
+            tmp.shape.enable = True
+            corr = self.get_corr()
+            print(corr)
+            tmp.shape.x = self.x_shape
+            tmp.shape.y = self.y_shape
+            pubFormChange.publish(tmp)
+
+        if self._widget.shapeCheckBox.isChecked() and self._widget.rotationCheckBox.isChecked():
+            self.change_plain_text('Shape selected (shape enable set: True), rotation angle selected (rootation enable set: True)')
+
+            if self._widget.angleEdit.text() != '':
                 tmp = formation_control.msg.Formation()
+                try:
+                    tmp.rotation.angle = float(self._widget.angleEdit.text())
+                except ValueError:
+                    self.change_plain_text('Wrong input! (expected int or float)')
+                    return
                 tmp.shape.enable = True
                 corr = self.get_corr()
                 print(corr)
                 tmp.shape.x = self.x_shape
                 tmp.shape.y = self.y_shape
+                tmp.rotation.enable = True
                 pubFormChange.publish(tmp)
+            else:
+                self.change_plain_text('Enter angle!')
 
-            if self._widget.shapeCheckBox.isChecked() and self._widget.rotationCheckBox.isChecked():
-                self.change_plain_text('Shape selected (shape enable set: True), rotation angle selected (rootation enable set: True)')
 
-                if self._widget.angleEdit.text() != '':
-                    tmp = formation_control.msg.Formation()
+        if self._widget.shapeCheckBox.isChecked() == False and self._widget.rotationCheckBox.isChecked() == False:
+            self.change_plain_text('Shape not selected!')
+            print('Shape set: False, rotation set: False')
+
+        if self._widget.shapeCheckBox.isChecked() == False and self._widget.rotationCheckBox.isChecked():
+            self.change_plain_text('Shape not selected (shape enable set: False), rotation angle selected (rootation enable set: True)')
+            tmp = formation_control.msg.Formation()
+            tmp.shape.enable = False
+
+            if self._widget.angleEdit.text() != '':
+                try:
                     tmp.rotation.angle = float(self._widget.angleEdit.text())
-                    tmp.shape.enable = True
-                    corr = self.get_corr()
-                    print(corr)
-                    tmp.shape.x = self.x_shape
-                    tmp.shape.y = self.y_shape
-                    tmp.rotation.enable = True
-                    pubFormChange.publish(tmp)
-                else:
-                    self.change_plain_text('Enter angle!')
-
-
-            if self._widget.shapeCheckBox.isChecked() == False and self._widget.rotationCheckBox.isChecked() == False:
-                self.change_plain_text('Shape not selected!')
-                print('Shape set: False, rotation set: False')
-
-            if self._widget.shapeCheckBox.isChecked() == False and self._widget.rotationCheckBox.isChecked():
-                self.change_plain_text('Shape not selected (shape enable set: False), rotation angle selected (rootation enable set: True)')
-                tmp = formation_control.msg.Formation()
-                tmp.shape.enable = False
-
-                if self._widget.angleEdit.text() != '':
-                    tmp.rotation.angle = float(self._widget.angleEdit.text())
-                    tmp.rotation.enable = True
-                else:
-                    self.change_plain_text('Enter angle!')
-                pubFormChange.publish(tmp)
+                except ValueError:
+                    self.change_plain_text('Wrong input! (expected int or float)')
+                    return
+                tmp.rotation.enable = True
+            else:
+                self.change_plain_text('Enter angle!')
+            pubFormChange.publish(tmp)
 
 
     def callback(self, data):
@@ -496,8 +499,8 @@ class VehicleControl(Plugin):
 
         for i in range(len(inx)):
             for j in range(len(inx)):
-                self.x_shape[i*len(self.vehicles) + j] = self.vehicles[inx[j]].get_pos()[0] - self.vehicles[inx[i]].get_pos()[0]
-                self.y_shape[i*len(self.vehicles) + j] = self.vehicles[inx[j]].get_pos()[1] - self.vehicles[inx[i]].get_pos()[1]
+                self.x_shape[i*len(self.vehNames) + j] = self.vehicles[inx[j]].get_pos()[0] - self.vehicles[inx[i]].get_pos()[0]
+                self.y_shape[i*len(self.vehNames) + j] = self.vehicles[inx[j]].get_pos()[1] - self.vehicles[inx[i]].get_pos()[1]
         print(inx)
         print(self.x_shape)
         print(self.y_shape)
