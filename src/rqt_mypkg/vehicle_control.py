@@ -493,12 +493,11 @@ class VehicleControl(Plugin):
         inx=[]
         for i in range(0, len(self.vehicles)):
             inx.append(int(self.vehicles[i].rect.get_label()))
-
+        print(inx)
         for i in range(len(inx)):
             for j in range(len(inx)):
-                self.x_shape[i*len(self.vehNames) + j] = self.vehicles[inx[j]].get_pos()[0] - self.vehicles[inx[i]].get_pos()[0]
-                self.y_shape[i*len(self.vehNames) + j] = self.vehicles[inx[j]].get_pos()[1] - self.vehicles[inx[i]].get_pos()[1]
-        print(inx)
+                self.x_shape[inx[i]*len(self.vehNames) + inx[j]] = self.vehicles[j].get_pos()[0] - self.vehicles[i].get_pos()[0]
+                self.y_shape[inx[i]*len(self.vehNames) + inx[j]] = self.vehicles[j].get_pos()[1] - self.vehicles[i].get_pos()[1]
         print(self.x_shape)
         print(self.y_shape)
 
