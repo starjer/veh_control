@@ -133,6 +133,8 @@ class VehicleControl(Plugin):
         self._widget.vehForm_5.clicked.connect(self.veh5_formation)
         self._widget.pb_start.clicked.connect(self.pub_FCEnable_msgs_start)
         self._widget.pb_stop.clicked.connect(self.pub_FCEnable_msgs_stop)
+        self._widget.zoomIn_btn.clicked.connect(self.zoomIn)
+        self._widget.zoomOut_btn.clicked.connect(self.zoomOut)
 
         self._widget.vehForm_3.setCheckable(True)
         self._widget.vehForm_4.setCheckable(True)
@@ -512,18 +514,59 @@ class VehicleControl(Plugin):
         try:
             int(self._widget.xLim.text())
         except ValueError:
-            self.change_plain_text('Wrong input! (expected int)')
+            self.change_plain_text('Wrong input! (expected int or float)')
         else:
 
             xLim = self._widget.xLim.text()
             yLim = self._widget.yLim.text()
 
-            print('Limits are:', int(yLim), int(yLim))
-            ax.set_xlim(0, int(xLim))
-            ax.set_ylim(0, int(yLim))
+            print('Limits are:', float(yLim), float(yLim))
+            ax.set_xlim(0, float(xLim))
+            ax.set_ylim(0, float(yLim))
             #ax.grid()
             self.figure.canvas.draw()
             self.figure.canvas.flush_events()
+
+    def zoomIn(self):
+
+        xLim = self._widget.xLim.text()
+        yLim = self._widget.yLim.text()
+        zoomLim = 0.8
+        xLimtmp = float(xLim)*zoomLim
+        yLimtmp = float(yLim)*zoomLim
+
+        xLimtmp = float("%.2f" % xLimtmp)
+        yLimtmp = float("%.2f" % yLimtmp)
+
+        ax.set_xlim(0, xLimtmp)
+        ax.set_ylim(0, yLimtmp)
+        self._widget.xLim.setText(str(xLimtmp))
+        self._widget.yLim.setText(str(yLimtmp))
+
+        self.figure.canvas.draw()
+        self.figure.canvas.flush_events()
+
+    def zoomOut(self):
+
+        xLim = self._widget.xLim.text()
+        yLim = self._widget.yLim.text()
+        zoomLim = 1.2
+        xLimtmp = float(xLim)*zoomLim
+        yLimtmp = float(yLim)*zoomLim
+
+        xLimtmp = float("%.2f" % xLimtmp)
+        yLimtmp = float("%.2f" % yLimtmp)
+
+        ax.set_xlim(0, xLimtmp)
+        ax.set_ylim(0, yLimtmp)
+        self._widget.xLim.setText(str(xLimtmp))
+        self._widget.yLim.setText(str(yLimtmp))
+
+        self.figure.canvas.draw()
+        self.figure.canvas.flush_events()
+
+
+
 
 fig = plt.figure()
 
