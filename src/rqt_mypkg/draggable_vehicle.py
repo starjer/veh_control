@@ -12,7 +12,7 @@ class DraggableVehicle:
     showCorr = None
 
     def __init__(self, figure, vehName, vehicleID, pos):
-        self.vehTextList = []
+        self.vehName = vehName
         self.figure = figure
         self.press = None
         self.background = None
@@ -58,19 +58,11 @@ class DraggableVehicle:
         axes = self.rect.axes
 
         self.rect.set_animated(True)
-
-        ind = 0
-        for lbl in self.vehTextList:
-            if int(self.rect.get_label()) == int(lbl.get_label()):
-                ind = int(self.vehTextList.index(lbl))
-                print('Rect LABEL:', int(self.rect.get_label()))
-                print('Text LABEL:', int(self.vehTextList[int(self.vehTextList.index(lbl))].get_label()))
-
-        self.vehTextList[ind].set_visible(False)
+        self.vehText.set_visible(False)
 
         canvas.draw()
         self.background = canvas.copy_from_bbox(self.rect.axes.bbox)
-        self.vehTextList[ind].set_visible(True)
+        self.vehText.set_visible(True)
         # now redraw just the rectangle
         axes.draw_artist(self.rect)
 
@@ -94,12 +86,8 @@ class DraggableVehicle:
 
         axes = self.rect.axes
 
-        for name in self.vehTextList:
-            if int(name.get_label()) == int(self.rect.get_label()):
-                ind = int(self.vehTextList.index(name))
-
-        self.vehTextList[ind].set_x(x0 + dx)
-        self.vehTextList[ind].set_y(y0 + dy + 0.9)
+        self.vehText.set_x(x0 + dx)
+        self.vehText.set_y(y0 + dy + 0.9)
 
         canvas = self.figure.canvas
 
@@ -108,10 +96,11 @@ class DraggableVehicle:
 
         # redraw just the current rectangle
         axes.draw_artist(self.rect)
-        axes.draw_artist(self.vehTextList[ind])
+        axes.draw_artist(self.vehText)
 
         # blit just the redrawn area
         canvas.blit(axes.bbox)
+	self.showCorr(self.rect.xy)
 
 
     def on_release(self, event):
@@ -145,11 +134,9 @@ class DraggableVehicle:
         self.rect.set_x(float(x))
         self.rect.set_y(float(y))
 
-        for name in self.vehTextList:
-            if int(name.get_label()) == int(self.rect.get_label()):
-                self.vehTextList[int(self.vehTextList.index(name))].set_x(float(x))
-                self.vehTextList[int(self.vehTextList.index(name))].set_y(float(y)+0.9)
-                axes.draw_artist(self.vehTextList[int(self.vehTextList.index(name))])
+        self.vehText.set_x(float(x))
+        self.vehText.set_y(float(y)+0.9)
+        axes.draw_artist(self.vehText)
 
         canvas = self.figure.canvas
         axes.draw_artist(self.rect)
@@ -166,7 +153,10 @@ class DraggableVehicle:
         for axs in figure.axes:
             print(axs)
             ax = axs
-        tmp = ax.bar(self.initalPosx, 0.8, 0.8, self.initalPosy)
+	print(self.initalPosx)
+	print(self.initalPosy)
+        tmp = ax.bar(self.initalPosx+0.4, 0.8, 0.8, self.initalPosy,color='blue')
+	
         for rect in tmp:
             self.rect = rect
 
@@ -175,17 +165,14 @@ class DraggableVehicle:
         #Create text with label
 
         self.vehText = ax.text(self.initalPosx, self.initalPosy + self.offset*2.2, str(name), label=int(self.vehID))
-        self.vehTextList.append(self.vehText)
 
     def del_veh(self, oneVeh, allVeh):
 
         if oneVeh == True:
             self.rect.remove()
 
-            for name in self.vehTextList:
-                if int(name.get_label()) == int(self.rect.get_label()):
-                    self.vehTextList[int(self.vehTextList.index(name))].remove()
-                    self.figure.canvas.draw()
+            self.vehText.remove()
+            self.figure.canvas.draw()
         else:
 
             axes = self.rect.axes
@@ -193,14 +180,10 @@ class DraggableVehicle:
             axes.grid()
             self.figure.canvas.draw()
             self.figure.canvas.flush_events()
-            del self.vehTextList[:]
+            del self.vehText
 
     def get_name(self):
-
-            for name in self.vehTextList:
-                if int(name.get_label()) == int(self.rect.get_label()):
-                    a = self.vehTextList[int(self.vehTextList.index(name))].get_text()
-                    print(a)
+            return self.vehName
 
 
     def disconnect(self):

@@ -5,7 +5,6 @@ import sys
 import std_msgs.msg
 import formation_control.msg
 import random
-import gtk
 import math
 
 from qt_gui.plugin import Plugin
@@ -33,7 +32,6 @@ from PyQt5 import QtGui
 
 from matplotlib.text import Text
 from matplotlib.figure import Figure
-from matplotlib_scalebar.scalebar import ScaleBar
 
 from draggable_vehicle import DraggableVehicle
 
