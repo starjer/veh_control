@@ -459,7 +459,7 @@ class VehicleControl(Plugin):
                 if int(veh.rect.get_label()) == int(self.vehicle_id):
                     self.vehNames[(int(self.vehicle_id))] = str(self.tmpVehNames[(int(self.vehicle_id))])
                     print(self.vehNames)
-                    veh.del_veh(True, False)
+                    veh.del_veh()
                     del self.vehicles[int(self.vehicles.index(veh))]
                     self.vehCounter = int(self.vehCounter) - 1
                     self.vehID[int(self.vehicle_id)] = int(self.vehicle_id)
@@ -471,9 +471,8 @@ class VehicleControl(Plugin):
                 inx = int(veh.rect.get_label())
                 self.vehID[int(inx)] = int(inx)
                 self.vehNames[int(inx)] = str(self.tmpVehNames[int(inx)])
-                print(inx)
-                self.vehCounter = self.vehCounter - int(len(self.vehicles))
-            veh.del_veh(False, True)
+                veh.del_veh()
+            self.vehCounter = 0
             del self.vehicles[:]
             self.set_limits()
             print('Vehicles on the map:', self.vehCounter)

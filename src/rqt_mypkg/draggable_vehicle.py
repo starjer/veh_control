@@ -153,8 +153,8 @@ class DraggableVehicle:
         for axs in figure.axes:
             print(axs)
             ax = axs
-	print(self.initalPosx)
-	print(self.initalPosy)
+	    print(self.initalPosx)
+	    print(self.initalPosy)
         tmp = ax.bar(self.initalPosx+0.4, 0.8, 0.8, self.initalPosy,color='blue')
 	
         for rect in tmp:
@@ -166,21 +166,10 @@ class DraggableVehicle:
 
         self.vehText = ax.text(self.initalPosx, self.initalPosy + self.offset*2.2, str(name), label=int(self.vehID))
 
-    def del_veh(self, oneVeh, allVeh):
-
-        if oneVeh == True:
-            self.rect.remove()
-
-            self.vehText.remove()
-            self.figure.canvas.draw()
-        else:
-
-            axes = self.rect.axes
-            axes.clear()
-            axes.grid()
-            self.figure.canvas.draw()
-            self.figure.canvas.flush_events()
-            del self.vehText
+    def del_veh(self):
+        self.rect.remove()
+        self.vehText.remove()
+        self.figure.canvas.draw()
 
     def get_name(self):
             return self.vehName
