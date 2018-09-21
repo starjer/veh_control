@@ -33,6 +33,7 @@ from PyQt5 import QtGui
 from matplotlib.text import Text
 from matplotlib.figure import Figure
 
+
 from draggable_vehicle import DraggableVehicle
 
 
@@ -395,6 +396,7 @@ class VehicleControl(Plugin):
             tmp.shape.x = self.x_shape
             tmp.shape.y = self.y_shape
             pubFormChange.publish(tmp)
+            self.initialize_formChangeMatrix()
 
         if self._widget.shapeCheckBox.isChecked() and self._widget.rotationCheckBox.isChecked():
             self.change_plain_text('Shape selected (shape enable set: True), rotation angle selected (rootation enable set: True)')
@@ -413,6 +415,7 @@ class VehicleControl(Plugin):
                 tmp.shape.y = self.y_shape
                 tmp.rotation.enable = True
                 pubFormChange.publish(tmp)
+                self.initialize_formChangeMatrix()
             else:
                 self.change_plain_text('Enter angle!')
 
@@ -443,6 +446,10 @@ class VehicleControl(Plugin):
         # self.a = rospy.get_caller_id() + '\n I heard {}'.format(data.data)
         #print(rospy.get_caller_id())
         # print("CALLBACK : {}".format(self.a))
+
+    def initialize_formChangeMatrix(self):
+        self.x_shape = [0]*len(self.vehNames)**2
+        self.y_shape = [0]*len(self.vehNames)**2
 
     def delete_vehicle(self, oneVeh, allVeh):
 
@@ -522,4 +529,4 @@ fig = plt.figure()
 
 if __name__ == '__main__':
     fig.draw()
-rospy.spin()
+    rospy.spin()
