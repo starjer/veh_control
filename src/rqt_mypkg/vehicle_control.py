@@ -5,7 +5,7 @@ import sys
 import std_msgs.msg
 import formation_control.msg
 import random
-import gtk
+#import gtk
 import math
 
 from qt_gui.plugin import Plugin
