@@ -4,15 +4,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.text import Text
 
-class DraggableVehicle:
 
+class DraggableVehicle:
     lock = None  # only one can be animated at a time
     method = None
     color = None
     showCorr = None
 
     def __init__(self, figure, vehName, vehicleID, pos):
-        self.vehTextList = []
+        self.vehName = vehName
         self.figure = figure
         self.press = None
         self.background = None
@@ -39,7 +39,6 @@ class DraggableVehicle:
         self.cidmotion = self.figure.canvas.mpl_connect(
             'motion_notify_event', self.on_motion)
 
-
     def on_press(self, event):
         'on button press we will see if the mouse is over us and store some data'
 
@@ -58,19 +57,11 @@ class DraggableVehicle:
         axes = self.rect.axes
 
         self.rect.set_animated(True)
-
-        ind = 0
-        for lbl in self.vehTextList:
-            if int(self.rect.get_label()) == int(lbl.get_label()):
-                ind = int(self.vehTextList.index(lbl))
-                print('Rect LABEL:', int(self.rect.get_label()))
-                print('Text LABEL:', int(self.vehTextList[int(self.vehTextList.index(lbl))].get_label()))
-
-        self.vehTextList[ind].set_visible(False)
+        self.vehText.set_visible(False)
 
         canvas.draw()
         self.background = canvas.copy_from_bbox(self.rect.axes.bbox)
-        self.vehTextList[ind].set_visible(True)
+        self.vehText.set_visible(True)
         # now redraw just the rectangle
         axes.draw_artist(self.rect)
 
@@ -80,7 +71,6 @@ class DraggableVehicle:
 
         self.color(self.c)
 
-
     def on_motion(self, event):
         'on motion we will move the rect if the mouse is over us'
         if DraggableVehicle.lock is not self:
@@ -89,17 +79,13 @@ class DraggableVehicle:
         x0, y0, xpress, ypress = self.press
         dx = event.xdata - xpress
         dy = event.ydata - ypress
-        self.rect.set_x(x0+dx)
-        self.rect.set_y(y0+dy)
+        self.rect.set_x(x0 + dx)
+        self.rect.set_y(y0 + dy)
 
         axes = self.rect.axes
 
-        for name in self.vehTextList:
-            if int(name.get_label()) == int(self.rect.get_label()):
-                ind = int(self.vehTextList.index(name))
-
-        self.vehTextList[ind].set_x(x0 + dx)
-        self.vehTextList[ind].set_y(y0 + dy + 0.9)
+        self.vehText.set_x(x0 + dx)
+        self.vehText.set_y(y0 + dy + 0.9)
 
         canvas = self.figure.canvas
 
@@ -108,17 +94,17 @@ class DraggableVehicle:
 
         # redraw just the current rectangle
         axes.draw_artist(self.rect)
-        axes.draw_artist(self.vehTextList[ind])
+        axes.draw_artist(self.vehText)
 
         # blit just the redrawn area
         canvas.blit(axes.bbox)
-
+        self.showCorr(self.rect.xy)
 
     def on_release(self, event):
         'on release we reset the press data'
         if DraggableVehicle.lock is not self:
             return
-        #print('Position is:', self.rect.xy)
+        # print('Position is:', self.rect.xy)
         self.press = None
         DraggableVehicle.lock = None
         self.x_pos = self.rect.xy[0]
@@ -128,16 +114,13 @@ class DraggableVehicle:
         self.rect.set_animated(False)
         self.background = None
 
-
         # redraw the full figure
         self.figure.canvas.draw()
         self.release = 1
         self.showCorr(self.rect.xy)
 
-
     def get_pos(self):
         return self.rect.xy
-
 
     def set_pos(self, x, y):
         axes = self.rect.axes
@@ -145,11 +128,9 @@ class DraggableVehicle:
         self.rect.set_x(float(x))
         self.rect.set_y(float(y))
 
-        for name in self.vehTextList:
-            if int(name.get_label()) == int(self.rect.get_label()):
-                self.vehTextList[int(self.vehTextList.index(name))].set_x(float(x))
-                self.vehTextList[int(self.vehTextList.index(name))].set_y(float(y)+0.9)
-                axes.draw_artist(self.vehTextList[int(self.vehTextList.index(name))])
+        self.vehText.set_x(float(x))
+        self.vehText.set_y(float(y) + 0.9)
+        axes.draw_artist(self.vehText)
 
         canvas = self.figure.canvas
         axes.draw_artist(self.rect)
@@ -158,50 +139,33 @@ class DraggableVehicle:
         self.figure.canvas.draw()
         self.figure.canvas.flush_events()
 
-
     def create_vehicle(self, figure, name):
 
-        #Create blue rectangle with label
+        # Create blue rectangle with label
 
         for axs in figure.axes:
             print(axs)
             ax = axs
-        tmp = ax.bar(self.initalPosx, 0.8, 0.8, self.initalPosy)
+            print(self.initalPosx)
+            print(self.initalPosy)
+        tmp = ax.bar(self.initalPosx + 0.4, 0.8, 0.8, self.initalPosy, color='blue')
+
         for rect in tmp:
             self.rect = rect
 
         self.rect.set_label(int(self.vehID))
 
-        #Create text with label
+        # Create text with label
 
-        self.vehText = ax.text(self.initalPosx, self.initalPosy + self.offset*2.2, str(name), label=int(self.vehID))
-        self.vehTextList.append(self.vehText)
+        self.vehText = ax.text(self.initalPosx, self.initalPosy + self.offset * 2.2, str(name), label=int(self.vehID))
 
-    def del_veh(self, oneVeh, allVeh):
-
-        if oneVeh == True:
-            self.rect.remove()
-
-            for name in self.vehTextList:
-                if int(name.get_label()) == int(self.rect.get_label()):
-                    self.vehTextList[int(self.vehTextList.index(name))].remove()
-                    self.figure.canvas.draw()
-        else:
-
-            axes = self.rect.axes
-            axes.clear()
-            axes.grid()
-            self.figure.canvas.draw()
-            self.figure.canvas.flush_events()
-            del self.vehTextList[:]
+    def del_veh(self):
+        self.rect.remove()
+        self.vehText.remove()
+        self.figure.canvas.draw()
 
     def get_name(self):
-
-            for name in self.vehTextList:
-                if int(name.get_label()) == int(self.rect.get_label()):
-                    a = self.vehTextList[int(self.vehTextList.index(name))].get_text()
-                    print(a)
-
+        return self.vehName
 
     def disconnect(self):
         'disconnect all the stored connection ids'
@@ -209,5 +173,3 @@ class DraggableVehicle:
         self.figure.canvas.mpl_disconnect(self.cidpress)
         self.figure.canvas.mpl_disconnect(self.cidrelease)
         self.figure.canvas.mpl_disconnect(self.cidmotion)
-
-

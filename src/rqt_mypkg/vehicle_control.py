@@ -5,7 +5,6 @@ import sys
 import std_msgs.msg
 import formation_control.msg
 import random
-#import gtk
 import math
 
 from qt_gui.plugin import Plugin
@@ -33,7 +32,6 @@ from PyQt5 import QtGui
 
 from matplotlib.text import Text
 from matplotlib.figure import Figure
-from matplotlib_scalebar.scalebar import ScaleBar
 
 from draggable_vehicle import DraggableVehicle
 
@@ -357,7 +355,6 @@ class VehicleControl(Plugin):
 
     def save_settings(self, plugin_settings, instance_settings):
         """
-
         :param plugin_settings:
         :param instance_settings:
         :return:
@@ -461,7 +458,7 @@ class VehicleControl(Plugin):
                 if int(veh.rect.get_label()) == int(self.vehicle_id):
                     self.vehNames[(int(self.vehicle_id))] = str(self.tmpVehNames[(int(self.vehicle_id))])
                     print(self.vehNames)
-                    veh.del_veh(True, False)
+                    veh.del_veh()
                     del self.vehicles[int(self.vehicles.index(veh))]
                     self.vehCounter = int(self.vehCounter) - 1
                     self.vehID[int(self.vehicle_id)] = int(self.vehicle_id)
@@ -473,9 +470,8 @@ class VehicleControl(Plugin):
                 inx = int(veh.rect.get_label())
                 self.vehID[int(inx)] = int(inx)
                 self.vehNames[int(inx)] = str(self.tmpVehNames[int(inx)])
-                print(inx)
-                self.vehCounter = self.vehCounter - int(len(self.vehicles))
-            veh.del_veh(False, True)
+                veh.del_veh()
+            self.vehCounter = 0
             del self.vehicles[:]
             self.set_limits()
             print('Vehicles on the map:', self.vehCounter)
@@ -496,12 +492,11 @@ class VehicleControl(Plugin):
         inx=[]
         for i in range(0, len(self.vehicles)):
             inx.append(int(self.vehicles[i].rect.get_label()))
-
+        print(inx)
         for i in range(len(inx)):
             for j in range(len(inx)):
-                self.x_shape[i*len(self.vehNames) + j] = self.vehicles[inx[j]].get_pos()[0] - self.vehicles[inx[i]].get_pos()[0]
-                self.y_shape[i*len(self.vehNames) + j] = self.vehicles[inx[j]].get_pos()[1] - self.vehicles[inx[i]].get_pos()[1]
-        print(inx)
+                self.x_shape[inx[i]*len(self.vehNames) + inx[j]] = self.vehicles[j].get_pos()[0] - self.vehicles[i].get_pos()[0]
+                self.y_shape[inx[i]*len(self.vehNames) + inx[j]] = self.vehicles[j].get_pos()[1] - self.vehicles[i].get_pos()[1]
         print(self.x_shape)
         print(self.y_shape)
 
@@ -527,4 +522,4 @@ fig = plt.figure()
 
 if __name__ == '__main__':
     fig.draw()
-    rospy.spin()
+rospy.spin()
