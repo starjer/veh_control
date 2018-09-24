@@ -143,6 +143,7 @@ class VehicleControl(Plugin):
         self._widget.plainTextEdit.insertPlainText("Nothing to show.")
         self.xedit = self._widget.xEdit
         self.yedit = self._widget.yEdit
+        self._widget.angleEdit.setText('0')
 
         if context.serial_number() > 1:
             self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
@@ -169,7 +170,7 @@ class VehicleControl(Plugin):
         veh_id = next((item for item in self.vehID if item is not None), 'All are Nones')
         self.vehID[(int(self.vehID.index(veh_id)))] = None
 
-        position = [x - self.offset, y-self.offset]
+        position = [x, y]
 
         vehicle = DraggableVehicle(self.figure, name, veh_id, position)
         vehicle.connect()
@@ -201,8 +202,8 @@ class VehicleControl(Plugin):
 
     def show_corr(self, xy):
 
-        self._widget.xEdit.setText(str(xy[0] + self.offset))
-        self._widget.yEdit.setText(str(xy[1] + self.offset))
+        self._widget.xEdit.setText(str(float("%.3f" % xy[0]) + self.offset))
+        self._widget.yEdit.setText(str(float("%.3f" % xy[1]) + self.offset))
 
     def change_color(self, a):
 
@@ -313,17 +314,19 @@ class VehicleControl(Plugin):
                     distanceTemp = float(self._widget.distanceEdit.text())
                     if len(self.vehicles) > 0:
                         self.delete_vehicle(False, True)
+                        tmpAngle = math.radians(72)
                         self.add_vehicle(3, 1)
-                        self.add_vehicle(1, 2)
-                        self.add_vehicle(2, 5)
-                        self.add_vehicle(4, 5)
-                        self.add_vehicle(5, 2)
+                        self.add_vehicle(distanceTemp + 3, 1)
+                        self.add_vehicle(distanceTemp * math.cos(tmpAngle) + 3 + distanceTemp, distanceTemp * math.sin(tmpAngle) + 1)
+                        self.add_vehicle(distanceTemp/2 + 3, distanceTemp + distanceTemp*math.sin(tmpAngle) + 1)
+                        self.add_vehicle(3 - distanceTemp*math.cos(tmpAngle), distanceTemp*math.sin(tmpAngle) + 1)
                     else:
+                        tmpAngle = math.radians(72)
                         self.add_vehicle(3, 1)
-                        self.add_vehicle(1, 2)
-                        self.add_vehicle(2, 5)
-                        self.add_vehicle(4, 5)
-                        self.add_vehicle(5, 2)
+                        self.add_vehicle(distanceTemp + 3, 1)
+                        self.add_vehicle(distanceTemp*math.cos(tmpAngle) + 3 + distanceTemp, distanceTemp*math.sin(tmpAngle) + 1)
+                        self.add_vehicle(distanceTemp/2 + 3, distanceTemp + distanceTemp*math.sin(tmpAngle) + 1)
+                        self.add_vehicle(3 - distanceTemp*math.cos(tmpAngle), distanceTemp*math.sin(tmpAngle) + 1)
 
 
                 if self._widget.vehForm_3.isChecked():
@@ -346,7 +349,7 @@ class VehicleControl(Plugin):
             for veh in self.vehicles:
 
                 if int(veh.rect.get_label()) == int(self.vehicle_id):
-                    self.vehicles[int(self.vehicles.index(veh))].set_pos(x - self.offset,y - self.offset)
+                    self.vehicles[int(self.vehicles.index(veh))].set_pos(x - self.offset, y - self.offset)
 
             print('Vehicles on the map:', self.vehCounter)
 
@@ -393,12 +396,13 @@ class VehicleControl(Plugin):
             print('Shape set: True')
             tmp = formation_control.msg.Formation()
             tmp.shape.enable = True
+            self.initialize_formChangeMatrix()
             corr = self.get_corr()
             print(corr)
             tmp.shape.x = self.x_shape
             tmp.shape.y = self.y_shape
             pubFormChange.publish(tmp)
-            self.initialize_formChangeMatrix()
+
 
         if self._widget.shapeCheckBox.isChecked() and self._widget.rotationCheckBox.isChecked():
             self.change_plain_text('Shape selected (shape enable set: True), rotation angle selected (rootation enable set: True)')
@@ -411,13 +415,14 @@ class VehicleControl(Plugin):
                     self.change_plain_text('Wrong input! (expected int or float)')
                     return
                 tmp.shape.enable = True
+                self.initialize_formChangeMatrix()
                 corr = self.get_corr()
                 print(corr)
                 tmp.shape.x = self.x_shape
                 tmp.shape.y = self.y_shape
                 tmp.rotation.enable = True
                 pubFormChange.publish(tmp)
-                self.initialize_formChangeMatrix()
+
             else:
                 self.change_plain_text('Enter angle!')
 

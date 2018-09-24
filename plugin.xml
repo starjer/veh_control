@@ -12,7 +12,7 @@
          <label>Subgroup</label>
        </group>
        -->
-       <label>Formation Control</label>
+       <label>Formation Control GUI</label>
        <icon type="theme">applications-accessories</icon>
        <statustip>Great user interface to provide real value.</statustip>
      </qtgui>

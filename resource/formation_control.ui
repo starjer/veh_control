@@ -127,6 +127,11 @@ QLabel {
 font-weight: bold;
 font-size: 15px;
 }
+
+#titleLabel {
+font-weight: bold;
+font-size: 22px;
+}
 </string>
   </property>
   <widget class="QWidget" name="verticalLayoutWidget">
@@ -160,7 +165,7 @@ font-size: 15px;
      <rect>
       <x>20</x>
       <y>30</y>
-      <width>198</width>
+      <width>220</width>
       <height>421</height>
      </rect>
     </property>
@@ -625,7 +630,7 @@ font-size: 15px;
      </rect>
     </property>
     <property name="text">
-     <string>Enter rotation angle [deg]:</string>
+     <string>Enter rotation angle [°]:</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -635,10 +640,10 @@ font-size: 15px;
   <widget class="QPlainTextEdit" name="plainTextEdit">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>630</y>
-     <width>371</width>
-     <height>51</height>
+     <x>320</x>
+     <y>620</y>
+     <width>421</width>
+     <height>61</height>
     </rect>
    </property>
   </widget>
@@ -646,7 +651,7 @@ font-size: 15px;
    <property name="geometry">
     <rect>
      <x>530</x>
-     <y>220</y>
+     <y>210</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -672,13 +677,36 @@ font-size: 15px;
    <property name="geometry">
     <rect>
      <x>430</x>
-     <y>230</y>
+     <y>220</y>
      <width>101</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
     <string>Zoom In/Out:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="titleLabel">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>30</y>
+     <width>271</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>-1</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Formation Control GUI</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <zorder>rightFrame</zorder>
@@ -688,6 +716,7 @@ font-size: 15px;
   <zorder>plainTextEdit</zorder>
   <zorder>horizontalLayoutWidget_5</zorder>
   <zorder>label</zorder>
+  <zorder>titleLabel</zorder>
  </widget>
  <resources/>
  <connections/>

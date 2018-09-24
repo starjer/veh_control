@@ -27,6 +27,8 @@ class DraggableVehicle:
         self.initalPosx = pos[0]
         self.initalPosy = pos[1]
         self.vehID = vehicleID
+        self.vehLength = 0.8
+        self.vehHight = 0.8
 
         self.create_vehicle(figure, vehName)
 
@@ -148,7 +150,7 @@ class DraggableVehicle:
             ax = axs
             print(self.initalPosx)
             print(self.initalPosy)
-        tmp = ax.bar(self.initalPosx + 0.4, 0.8, 0.8, self.initalPosy, color='blue')
+        tmp = ax.bar(self.initalPosx - self.offset, self.vehLength, self.vehHight, self.initalPosy - self.offset, color='blue')
 
         for rect in tmp:
             self.rect = rect
@@ -157,7 +159,7 @@ class DraggableVehicle:
 
         # Create text with label
 
-        self.vehText = ax.text(self.initalPosx, self.initalPosy + self.offset * 2.2, str(name), label=int(self.vehID))
+        self.vehText = ax.text(self.initalPosx - self.offset, self.initalPosy + self.offset*1.1, str(name), label=int(self.vehID))
 
     def del_veh(self):
         self.rect.remove()
